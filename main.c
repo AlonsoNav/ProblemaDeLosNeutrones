@@ -3,7 +3,6 @@
 #include <math.h>
 #include "cJSON.h"
 
-
 const int PERIODIC_TABLE_SIZE = 100;
 
 struct ChemicalElement {
@@ -77,72 +76,41 @@ void calculateSum(struct ChemicalElement periodicTable[], double *xSum, double *
     }
 }
 
-void crearMatrizDeEcuaciones(double xSum, double xSquaredSum, double ySum, double xTimesYSum, double matrizEcuaciones[2][2]) {
-    matrizEcuaciones[0][0] = xSum;
-    matrizEcuaciones[0][1] = xSquaredSum;
-    matrizEcuaciones[1][0] = ySum;
-    matrizEcuaciones[1][1] = xTimesYSum;
-
-    printf("\nMatriz Ecuaciones:\n");
-    for (int i = 0; i < 2; ++i) {
-        for (int j = 0; j < 2; ++j) {
-            printf("%.2f ", matrizEcuaciones[i][j]);
-        }
-        printf("\n");
-    }
+void crearMatrizDeEcuaciones(double xSum, double xSquaredSum, double ySum, double xTimesYSum, double matrizEcuaciones[2][3]) {
+    matrizEcuaciones[0][0] = PERIODIC_TABLE_SIZE;
+    matrizEcuaciones[0][1] = xSum;
+    matrizEcuaciones[0][2] = ySum;
+    matrizEcuaciones[1][0] = xSum;
+    matrizEcuaciones[1][1] = xSquaredSum;
+    matrizEcuaciones[1][2] = xTimesYSum;
 }
 
-void calcularDeterminantes(double matrizEcuaciones[2][2], double *determinante, double *determinanteK, double *determinanteB) {
-    double matrizAumentada[2][3] = {
-            {matrizEcuaciones[0][1], matrizEcuaciones[0][0] , matrizEcuaciones[1][1]},
-            {matrizEcuaciones[0][0], 100, matrizEcuaciones[1][0]}
-    };
-
-    // Imprimir la matriz aumentada (opcional, solo para verificar)
-    printf("\nMatriz aumentada:\n");
-    for (int i = 0; i < 2; ++i) {
-        for (int j = 0; j < 3; ++j) {
-            printf("%.6f ", matrizAumentada[i][j]);
-        }
-        printf("\n");
-    };
-
-    // Calcular el determinante
-    *determinante = matrizAumentada[0][0] * matrizAumentada[0][1] - matrizAumentada[1][0] * matrizAumentada[1][1];
-
-    // Calcular los determinantes K y B
-    *determinanteK = matrizAumentada[0][2] * matrizAumentada[0][1] - matrizAumentada[1][2] * matrizAumentada[1][1];
-    *determinanteB = matrizAumentada[0][0] * matrizAumentada[0][2] - matrizAumentada[1][0] * matrizAumentada[1][2];
+void calcularDeterminantes(double matrizEcuaciones[2][3], double *determinante, double *determinanteK, double *determinanteB) {
+    *determinante = matrizEcuaciones[0][0] * matrizEcuaciones[1][1] - matrizEcuaciones[0][1] * matrizEcuaciones[1][0];
+    *determinanteK = matrizEcuaciones[0][2] * matrizEcuaciones[1][1] - matrizEcuaciones[0][1] * matrizEcuaciones[1][2];
+    *determinanteB = matrizEcuaciones[0][0] * matrizEcuaciones[1][2] - matrizEcuaciones[0][2] * matrizEcuaciones[1][0];
 }
 
-void resolverAyB(double *determinante, double *determinanteK, double *determinanteB, double *a, double *b) {
-    double k = (*determinanteK)/(*determinante);
-    *a = pow(2.71828, k);
-    *b = (*determinanteB)/(*determinante);
+void resolverAyB(double determinante, double determinanteK, double determinanteB, double *a, double *b) {
+    double k = determinanteK/determinante;
+    *a = exp(k);
+    *b = determinanteB/determinante;
 }
 
-
-void solveToFunction(struct ChemicalElement periodicTable[], double a, double b){
-    double xSum = 0;
-    double xSquaredSum = 0;
-    double ySum = 0;
-    double xTimesYSum = 0;
-    double matrizEcuaciones[2][2];
-    double determinante, determinanteK, determinanteB;
+void solveToFunction(struct ChemicalElement periodicTable[], double *a, double *b){
+    double xSum, xSquaredSum, ySum, xTimesYSum, determinante, determinanteK, determinanteB;
+    xSum = xSquaredSum = ySum = xTimesYSum = 0;
+    double matrizEcuaciones[2][3];
     calculateSum(periodicTable, &xSum, &xSquaredSum, &ySum, &xTimesYSum);
-    printf("%f, %f, %f, %f", xSum, xSquaredSum, ySum, xTimesYSum);
-    crearMatrizDeEcuaciones( xSum, xSquaredSum, ySum, xTimesYSum, matrizEcuaciones);
+    crearMatrizDeEcuaciones(xSum, xSquaredSum, ySum, xTimesYSum, matrizEcuaciones);
     calcularDeterminantes(matrizEcuaciones, &determinante, &determinanteK, &determinanteB);
-    printf("%f, %f, %f", determinante, determinanteK, determinanteB);
-    resolverAyB(&determinante, &determinanteK, &determinanteB, &a, &b);
-    printf("\n\nA = %f, B = %f", a, b);
+    resolverAyB(determinante, determinanteK, determinanteB, a, b);
 }
 
 int main(void) {
     struct ChemicalElement periodicTable[PERIODIC_TABLE_SIZE];
-    double a;
-    double b;
+    double a, b;
     loadData(periodicTable);
-    solveToFunction(periodicTable, a, b);
+    solveToFunction(periodicTable, &a, &b);
     return 0;
 }
