@@ -3,6 +3,7 @@
 #include <math.h>
 #include "cJSON.h"
 
+
 const int PERIODIC_TABLE_SIZE = 100;
 
 struct ChemicalElement {
@@ -76,14 +77,11 @@ void calculateSum(struct ChemicalElement periodicTable[], double *xSum, double *
     }
 }
 
-void crearMatrizDeEcuaciones(double sumaX, double sumaX2, double sumaY, double sumaXY, double matrizEcuaciones[2][2]) {
-    matrizEcuaciones[0][0] = sumaX2;
-    matrizEcuaciones[0][1] = sumaX;
-    matrizEcuaciones[1][0] = sumaX;
-    matrizEcuaciones[1][1] = 100;
-
-    // Vector de términos independientes
-    double vectorB[2] = {sumaXY, sumaY};
+void crearMatrizDeEcuaciones(double xSum, double xSquaredSum, double ySum, double xTimesYSum, double matrizEcuaciones[2][2]) {
+    matrizEcuaciones[0][0] = xSum;
+    matrizEcuaciones[0][1] = xSquaredSum;
+    matrizEcuaciones[1][0] = ySum;
+    matrizEcuaciones[1][1] = xTimesYSum;
 
     printf("\nMatriz Ecuaciones:\n");
     for (int i = 0; i < 2; ++i) {
@@ -92,31 +90,36 @@ void crearMatrizDeEcuaciones(double sumaX, double sumaX2, double sumaY, double s
         }
         printf("\n");
     }
-
-    // Matriz aumentada
-    double matrizAumentada[2][3];
-    for (int i = 0; i < 2; ++i) {
-        for (int j = 0; j < 2; ++j) {
-            matrizAumentada[i][j] = matrizEcuaciones[i][j];
-        }
-        matrizAumentada[i][2] = vectorB[i];
-    }
-
-    // Imprimir la matriz aumentada (opcional, solo para verificar)
-    printf("\n Matriz aumentada:\n");
-    for (int i = 0; i < 2; ++i) {
-        for (int j = 0; j < 3; ++j) {
-            printf("%.2f ", matrizAumentada[i][j]);
-        }
-        printf("\n");
-    }
 }
 
-//void calcularDeterminantes(double matrizEcuaciones[1][1], double *determinante, double *determinanteK, double *determinanteB) {
-//    *determinante = matrizEcuaciones[0][0] * matrizEcuaciones[1][1] - matrizEcuaciones[0][1] * matrizEcuaciones[1][0];
-//    *determinanteK = matrizEcuaciones[1][1];
-//    *determinanteB = matrizEcuaciones[0][1];
-//}
+void calcularDeterminantes(double matrizEcuaciones[2][2], double *determinante, double *determinanteK, double *determinanteB) {
+    double matrizAumentada[2][3] = {
+            {matrizEcuaciones[0][1], matrizEcuaciones[0][0] , matrizEcuaciones[1][1]},
+            {matrizEcuaciones[0][0], 100, matrizEcuaciones[1][0]}
+    };
+
+    // Imprimir la matriz aumentada (opcional, solo para verificar)
+    printf("\nMatriz aumentada:\n");
+    for (int i = 0; i < 2; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            printf("%.6f ", matrizAumentada[i][j]);
+        }
+        printf("\n");
+    };
+
+    // Calcular el determinante
+    *determinante = matrizAumentada[0][0] * matrizAumentada[0][1] - matrizAumentada[1][0] * matrizAumentada[1][1];
+
+    // Calcular los determinantes K y B
+    *determinanteK = matrizAumentada[0][2] * matrizAumentada[0][1] - matrizAumentada[1][2] * matrizAumentada[1][1];
+    *determinanteB = matrizAumentada[0][0] * matrizAumentada[0][2] - matrizAumentada[1][0] * matrizAumentada[1][2];
+}
+
+void resolverAyB(double *determinante, double *determinanteK, double *determinanteB, double *a, double *b) {
+    double k = (*determinanteK)/(*determinante);
+    *a = pow(2.71828, k);
+    *b = (*determinanteB)/(*determinante);
+}
 
 
 void solveToFunction(struct ChemicalElement periodicTable[], double a, double b){
@@ -125,12 +128,14 @@ void solveToFunction(struct ChemicalElement periodicTable[], double a, double b)
     double ySum = 0;
     double xTimesYSum = 0;
     double matrizEcuaciones[2][2];
-    //double determinante, determinanteK, determinanteB;
+    double determinante, determinanteK, determinanteB;
     calculateSum(periodicTable, &xSum, &xSquaredSum, &ySum, &xTimesYSum);
     printf("%f, %f, %f, %f", xSum, xSquaredSum, ySum, xTimesYSum);
     crearMatrizDeEcuaciones( xSum, xSquaredSum, ySum, xTimesYSum, matrizEcuaciones);
-    //calcularDeterminantes(matrizEcuaciones, &determinante, &determinanteK, &determinanteB);
-    //printf("%f, %f, %f", determinante, determinanteK, determinanteB);
+    calcularDeterminantes(matrizEcuaciones, &determinante, &determinanteK, &determinanteB);
+    printf("%f, %f, %f", determinante, determinanteK, determinanteB);
+    resolverAyB(&determinante, &determinanteK, &determinanteB, &a, &b);
+    printf("\n\nA = %f, B = %f", a, b);
 }
 
 int main(void) {
