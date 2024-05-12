@@ -1,3 +1,3 @@
-C:/Users/crist/Desktop/TEC/semestre 5/Lenguajes/ProblemaDeLosNeutrones/cmake-build-debug/CMakeFiles/ProblemaDeLosNeutrones.dir
-C:/Users/crist/Desktop/TEC/semestre 5/Lenguajes/ProblemaDeLosNeutrones/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/crist/Desktop/TEC/semestre 5/Lenguajes/ProblemaDeLosNeutrones/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+C:/Users/alons/CLionProjects/ProblemaDeLosNeutrones/cmake-build-debug/CMakeFiles/ProblemaDeLosNeutrones.dir
+C:/Users/alons/CLionProjects/ProblemaDeLosNeutrones/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/alons/CLionProjects/ProblemaDeLosNeutrones/cmake-build-debug/CMakeFiles/rebuild_cache.dir

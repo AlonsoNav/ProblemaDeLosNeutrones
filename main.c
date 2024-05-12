@@ -7,10 +7,9 @@ const int PERIODIC_TABLE_SIZE = 100;
 
 struct ChemicalElement
 {
-    char name[50];
+    char name[20];
     int number;
     int actualNeutrons;
-    double functionNeutrons;
 };
 
 void loadFile(char **data)
@@ -61,7 +60,7 @@ void loadData(struct ChemicalElement periodicTable[])
         cJSON *atomic_mass = cJSON_GetObjectItem(element, "atomic_mass");
 
         // Assigning values to periodicTable
-        snprintf(periodicTable[index].name, 50, "%s", name->valuestring);
+        snprintf(periodicTable[index].name, 20, "%s", name->valuestring);
         periodicTable[index].number = number->valueint;
         periodicTable[index].actualNeutrons = (int)round(atomic_mass->valuedouble - number->valueint);
 
@@ -120,27 +119,6 @@ void solveToFunction(struct ChemicalElement periodicTable[], double *a, double *
     resolverAyB(determinante, determinanteK, determinanteB, a, b);
 }
 
-double linearFunction(double a, double b, double Z)
-{
-    return a * Z + b;
-}
-
-void calculateLinearFit(struct ChemicalElement periodicTable[], double *a, double *b)
-{
-    double sumZ = 0, sumZSquared = 0, sumN = 0, sumZTimesN = 0;
-    for (int i = 0; i < PERIODIC_TABLE_SIZE; i++)
-    {
-        double Z = (double)periodicTable[i].number;
-        double N = (double)periodicTable[i].actualNeutrons;
-        sumZ += Z;
-        sumZSquared += Z * Z;
-        sumN += N;
-        sumZTimesN += Z * N;
-    }
-    *a = (PERIODIC_TABLE_SIZE * sumZTimesN - sumZ * sumN) / (PERIODIC_TABLE_SIZE * sumZSquared - sumZ * sumZ);
-    *b = (sumN - (*a) * sumZ) / PERIODIC_TABLE_SIZE;
-}
-
 void printPeriodicTable(struct ChemicalElement periodicTable[], double a, double b)
 {
     printf("Tabla de Comparacion:\n");
@@ -150,16 +128,15 @@ void printPeriodicTable(struct ChemicalElement periodicTable[], double a, double
 
     for (int i = 0; i < PERIODIC_TABLE_SIZE; i++)
     {
-        double Z = (double)periodicTable[i].number;
-        double neutReal = (double)periodicTable[i].actualNeutrons;
-        double neutCalculado = linearFunction(a, b, Z);
+        int Z = periodicTable[i].number;
+        int neutReal = periodicTable[i].actualNeutrons;
+        double neutCalculado = a * pow(Z, b);
         int calcRounded = (int)round(neutCalculado);
         int calcFloor = (int)floor(neutCalculado);
         int difRounded = abs(neutReal - calcRounded);
         int difFloor = abs(neutReal - calcFloor);
 
-
-        printf("|%6d|%8d|%13.2f|%25d|%21d|%15d|%14d|\n", periodicTable[i].number, periodicTable[i].actualNeutrons, neutCalculado, calcRounded, calcFloor, difRounded, difFloor);
+        printf("|%6i|%8i|%13.2f|%25i|%21i|%15i|%14i|\n", Z, neutReal, neutCalculado, calcRounded, calcFloor, difRounded, difFloor);
     }
 
     printf("--------------------------------------------------------------------------------------------------------------\n");
@@ -171,12 +148,8 @@ int main(void)
     double a, b;
     loadData(periodicTable);
 
-    printf("Parametros a y b de la funcion de ajuste con determinantes:\n");
     solveToFunction(periodicTable, &a, &b);
-    printPeriodicTable(periodicTable, a, b);
-
-    printf("Parametros a y b de la funcion de ajuste con minimos cuadrados:\n");
-    calculateLinearFit(periodicTable, &a, &b);
+    printf("Parametros a y b de la funcion de ajuste con determinantes: a = %f, b = %f\n", a, b);
     printPeriodicTable(periodicTable, a, b);
 
     return 0;

@@ -1,4 +1,4 @@
-# Install script for directory: C:/Users/crist/Desktop/TEC/semestre 5/Lenguajes/ProblemaDeLosNeutrones
+# Install script for directory: C:/Users/alons/CLionProjects/ProblemaDeLosNeutrones
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -45,5 +45,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "C:/Users/crist/Desktop/TEC/semestre 5/Lenguajes/ProblemaDeLosNeutrones/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "C:/Users/alons/CLionProjects/ProblemaDeLosNeutrones/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
