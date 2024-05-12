@@ -145,20 +145,21 @@ void printPeriodicTable(struct ChemicalElement periodicTable[], double a, double
 {
     printf("Tabla de Comparacion:\n");
     printf("-------------------------------------------------------------------------------------------------------------\n");
-    printf("| NumE | N Real | N Predicho | redondeo al mas cercano | redondeo hacia cero | DifMasCercano | DifHaciaCero |\n");
+    printf("| NumE | N Real | N Calculado | redondeo al mas cercano | redondeo hacia cero | DifMasCercano | DifHaciaCero |\n");
     printf("-------------------------------------------------------------------------------------------------------------\n");
 
     for (int i = 0; i < PERIODIC_TABLE_SIZE; i++)
     {
         double Z = (double)periodicTable[i].number;
         double neutReal = (double)periodicTable[i].actualNeutrons;
-        double neutPredicho = linearFunction(a, b, Z);
-        int predichoRounded = (int)round(neutPredicho);
-        int predichoFloor = (int)floor(neutPredicho);
-        int difRounded = abs(neutReal - predichoRounded);
-        int difFloor = abs(neutReal - predichoFloor);
+        double neutCalculado = linearFunction(a, b, Z);
+        int calcRounded = (int)round(neutCalculado);
+        int calcFloor = (int)floor(neutCalculado);
+        int difRounded = abs(neutReal - calcRounded);
+        int difFloor = abs(neutReal - calcFloor);
 
-        printf("|%6d|%8d|%12.2f|%25d|%21d|%15d|%14d|\n", periodicTable[i].number, periodicTable[i].actualNeutrons, neutPredicho, predichoRounded, predichoFloor, difRounded, difFloor);
+
+        printf("|%6d|%8d|%13.2f|%25d|%21d|%15d|%14d|\n", periodicTable[i].number, periodicTable[i].actualNeutrons, neutCalculado, calcRounded, calcFloor, difRounded, difFloor);
     }
 
     printf("--------------------------------------------------------------------------------------------------------------\n");
