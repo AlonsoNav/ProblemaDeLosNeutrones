@@ -120,11 +120,6 @@ void solveToFunction(struct ChemicalElement periodicTable[], double *a, double *
     resolverAyB(determinante, determinanteK, determinanteB, a, b);
 }
 
-double linearFunction(double a, double b, double Z)
-{
-    return a * Z + b;
-}
-
 void calculateLinearFit(struct ChemicalElement periodicTable[], double *a, double *b)
 {
     double sumZ = 0, sumZSquared = 0, sumN = 0, sumZTimesN = 0;
@@ -145,20 +140,20 @@ void printPeriodicTable(struct ChemicalElement periodicTable[], double a, double
 {
     printf("Tabla de Comparacion:\n");
     printf("-------------------------------------------------------------------------------------------------------------\n");
-    printf("| NumE | N Real | N Predicho | redondeo al mas cercano | redondeo hacia cero | DifMasCercano | DifHaciaCero |\n");
+    printf("| NumE | N Real | N Calculado | redondeo al mas cercano | redondeo hacia cero | DifMasCercano | DifHaciaCero |\n");
     printf("-------------------------------------------------------------------------------------------------------------\n");
 
     for (int i = 0; i < PERIODIC_TABLE_SIZE; i++)
     {
         double Z = (double)periodicTable[i].number;
         double neutReal = (double)periodicTable[i].actualNeutrons;
-        double neutPredicho = linearFunction(a, b, Z);
+        double neutPredicho = a * pow(Z,b);
         int predichoRounded = (int)round(neutPredicho);
         int predichoFloor = (int)floor(neutPredicho);
         int difRounded = abs(neutReal - predichoRounded);
         int difFloor = abs(neutReal - predichoFloor);
 
-        printf("|%6d|%8d|%12.2f|%25d|%21d|%15d|%14d|\n", periodicTable[i].number, periodicTable[i].actualNeutrons, neutPredicho, predichoRounded, predichoFloor, difRounded, difFloor);
+        printf("|%6d|%8d|%13.2f|%25d|%21d|%15d|%14d|\n", periodicTable[i].number, periodicTable[i].actualNeutrons, neutPredicho, predichoRounded, predichoFloor, difRounded, difFloor);
     }
 
     printf("--------------------------------------------------------------------------------------------------------------\n");
@@ -172,10 +167,6 @@ int main(void)
 
     printf("Parametros a y b de la funcion de ajuste con determinantes:\n");
     solveToFunction(periodicTable, &a, &b);
-    printPeriodicTable(periodicTable, a, b);
-
-    printf("Parametros a y b de la funcion de ajuste con minimos cuadrados:\n");
-    calculateLinearFit(periodicTable, &a, &b);
     printPeriodicTable(periodicTable, a, b);
 
     return 0;
